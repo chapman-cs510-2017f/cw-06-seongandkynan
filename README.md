@@ -1,8 +1,8 @@
 # CS510 CW 6
 
-**Author(s):** **CHANGEME**
+**Author(s):** **Seong and Kynan**
 
-[![Build Status](https://travis-ci.org/chapman-cs510-2017f/cw-06-YOURNAME.svg?branch=master)](https://travis-ci.org/chapman-cs510-2017f/cw-06-YOURNAME)
+[![Build Status](https://travis-ci.org/chapman-cs510-2017f/cw-06-seongandkynan.svg?branch=master)](https://travis-ci.org/chapman-cs510-2017f/cw-06-seongandkynan)
 
 ## Specification
 
@@ -21,7 +21,8 @@
 
 Analyze in this section what you found useful about this assignment in your own words. Include any lingering questions or comments that you may have.
 
-**CHANGEME**
+1. **It is much easier to use Numpy and Pandas when dealing with a 2D complex plane. The Numpy's meshgred was a very convenient to create the plane. It is like a magic because we can apply a transformation function without using any for-loop logic on each complex number.**
+2. **Numpy's vectorize() method is very handy when applying a plane transformation. Although it does not necessarily have peformance benefit, it make it more intuitive to apply a function.**
 
 ## Honor Pledge
 
@@ -32,4 +33,4 @@ I pledge that all the work in this repository is my own with only the following 
 
 Signed,
 
-**YOURNAME**
+**Seong and Kynan**

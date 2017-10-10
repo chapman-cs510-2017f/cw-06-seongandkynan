@@ -2,20 +2,22 @@
 
 import abscplane
 import numpy as np
+import pandas as pd
 """ The module includes a new class ArrayComplexPlane that subclasses the abstract base class AbsComplexPlane which is imported from the abscplane.py module. 
 """
 
 class ArrayComplexPlane(abscplane.AbsComplexPlane):
     """ This class implements the complex plane with given attributes. 
-    It uses a list comprehension to represent the 2D grid needed to store 
+    It uses numpy and pandas to represent the 2D grid needed to store 
     the complex plane. The complex plane is a 2D grid of complex numbers, 
     having the form (x + y*1j), where 1j is the unit imaginary number in 
     Python, and one can think of x and y as the coordinates for the horizontal 
     axis and the vertical axis of the plane respectively. All attributes will
     be set during the __init__ constructor, and initialize the plane immediately 
     upon class instantiation.
+
     Methods:
-        __create_plane : a private method that creates or refreshs plane
+        _create_plane : a private method that creates or refreshs plane
         refresh        : regenerate plane
         apply          : apply a given function f
         zoom           : transform planes going through all functions lists 
@@ -57,13 +59,12 @@ class ArrayComplexPlane(abscplane.AbsComplexPlane):
         """this method creates a list of complext number using the default attributes
         (xmax, xmin, xlen, ymin, ymax, ymin) using numpy.
 
-        retunrs: a list of lists
          """
-        x = np.linspace(self.xmin, self.xmax, self.xlen)
-        y = np.linspace(self.ymin, self.ymax, self.ylen)
-        x, y = np.meshgrid(x, y)
-        self.plane  = x + y*1j 
-
+        x = np.linspace(self.xmin, self.xmax, self.xlen+1)
+        y = np.linspace(self.ymin, self.ymax, self.ylen+1)
+        xx, yy = np.meshgrid(x, y)
+        z  = xx + yy*1j 
+        self.plane = pd.DataFrame(z, columns=x, index=y)
 
     def refresh(self):
         """Regenerate complex plane.
@@ -82,10 +83,15 @@ class ArrayComplexPlane(abscplane.AbsComplexPlane):
         Apply fv to every point of the plane, so that the resulting
         value of self.plane is the final output of the sequence of
         transformations collected in the list self.fs.
+
+        arguments:
+            f : a function of transformation
         """
         fv = np.vectorize(f)
         self.fs.append(fv)
-        self.plane = fv(self.plane) 
+        # the labels of dataframe should stay after a function applied
+        # applymap applys a function in a 'element-wise'
+        self.plane = self.plane.applymap(fv) 
     
     def zoom(self,xmin,xmax,xlen,ymin,ymax,ylen):
         """Reset self.xmin, self.xmax, and self.xlen.
@@ -95,6 +101,7 @@ class ArrayComplexPlane(abscplane.AbsComplexPlane):
         the new points so that the resulting value of self.plane is the
         final output of the sequence of transformations collected in
         the list self.fs.
+
         Attributes:
             xmax (float) : maximum horizontal axis value
             xmin (float) : minimum horizontal axis value
@@ -119,12 +126,29 @@ class ArrayComplexPlane(abscplane.AbsComplexPlane):
         self._create_plane()
         for i, fv in enumerate(self.fs):
             print("running the function "+str(i+1))
-            self.plane = fv(self.plane)
+            self.plane = self.plane.applymap(fv)
             
     
 def main():
     cplane = ArrayComplexPlane()
-    print(cplane.plane)
+    print("initial plane:\n", cplane.plane)
+    def f2(x): return 2*x
+    def f3(x): return x*x
+    cplane.apply(f2)
+    print("plane after f2 applied:\n", cplane.plane)
+    print("self.fs: ", cplane.fs)
+    cplane.apply(f3)
+    print("plane after f3 applied:\n", cplane.plane)
+    print("self.fs: ", cplane.fs)
+    cplane.zoom(-2,2,4,-2,2,4)
+    print("plane after self.zoom(-2,2,4,-1,2,4)\n", cplane.plane)
+    cplane.refresh()
+    print("plane after self.refresh:\n", cplane.plane)
+    print("self.fs: ", cplane.fs)
+   
+ 
+ 
+
 
 if __name__ == "__main__":
     main()
